@@ -12,6 +12,7 @@ import {
 import { getProfile, getProfileAliases, getProfileSummary } from '../interfaces/steam';
 import { stripIndents } from 'common-tags';
 import clone from 'lodash.clonedeep';
+import { ensureUserCtx, splitMessage } from '../util';
 
 export default class HelloCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
@@ -83,7 +84,7 @@ export default class HelloCommand extends SlashCommand {
       }
     };
 
-    const btnID = (id: string) => `steam_user/${profile.steamid['64']}/${id}`;
+    const btnID = (id: string) => `steam_user/${id}`;
 
     // Show bans
     if (profile.bans.vac !== 'none' || profile.bans.game !== 'none' || profile.bans.community || profile.bans.trade) {
@@ -102,15 +103,22 @@ export default class HelloCommand extends SlashCommand {
       });
     }
 
+    const summaryCtrl = {
+      pages: [] as string[],
+      current: 0
+    };
+
     if (profile.private === true) {
       pages.main.description = '*This profile is private.*';
     } else {
       const summary = getProfileSummary(profile.steamid['64']).trim();
       embedBase.description = summary.split('\n').slice(0, 4).join('\n').slice(0, 500);
-      if (summary.length > embedBase.description.length)
+      if (summary.length > embedBase.description.length) {
+        summaryCtrl.pages = splitMessage(summary, { maxLength: 2048 });
         pages.summary = {
-          description: summary.slice(0, 2048)
+          description: summaryCtrl.pages[0]
         };
+      }
 
       if (profile.background_url)
         pages.bg = {
@@ -228,7 +236,12 @@ export default class HelloCommand extends SlashCommand {
       ]
     });
 
-    const updatePage = (btnCtx: ComponentContext, lastPage?: string, newLabel?: string) => {
+    const updatePage = (
+      btnCtx: ComponentContext,
+      lastPage?: string,
+      newLabel?: string,
+      extraRow?: ComponentActionRow
+    ) => {
       currentPageButtons.components = pageButtons.components.map((btn) => {
         btn = Object.assign({}, btn);
         if ('custom_id' in btn) {
@@ -240,10 +253,12 @@ export default class HelloCommand extends SlashCommand {
         }
         return btn;
       });
+
       return btnCtx.editParent({
         embeds: [Object.assign({}, embedBase, pages[currentPage])],
         components: [
           currentPageButtons,
+          extraRow || undefined,
           {
             type: ComponentType.ACTION_ROW,
             components: [
@@ -258,12 +273,12 @@ export default class HelloCommand extends SlashCommand {
               }
             ]
           }
-        ]
+        ].filter((v) => !!v) as any
       });
     };
 
     ctx.registerComponent(btnID('bg'), async (btnCtx) => {
-      if (btnCtx.user.id !== ctx.user.id) return btnCtx.acknowledge();
+      if (await ensureUserCtx(btnCtx, ctx)) return;
       const thisButton = currentPageButtons.components.find(
         (btn) => 'custom_id' in btn && btn.custom_id === btnID('bg')
       );
@@ -273,19 +288,8 @@ export default class HelloCommand extends SlashCommand {
       return updatePage(btnCtx, 'bg', `${active ? 'Show' : 'Hide'} Background`);
     });
 
-    ctx.registerComponent(btnID('summary'), async (btnCtx) => {
-      if (btnCtx.user.id !== ctx.user.id) return btnCtx.acknowledge();
-      const thisButton = currentPageButtons.components.find(
-        (btn) => 'custom_id' in btn && btn.custom_id === btnID('summary')
-      );
-      const active = thisButton.style === ButtonStyle.PRIMARY;
-      if (active) currentPage = 'main';
-      else currentPage = 'summary';
-      return updatePage(btnCtx, 'summary', `${active ? 'Expand' : 'Hide'} Summary`);
-    });
-
     ctx.registerComponent(btnID('aliases'), async (btnCtx) => {
-      if (btnCtx.user.id !== ctx.user.id) return btnCtx.acknowledge();
+      if (await ensureUserCtx(btnCtx, ctx)) return;
       const thisButton = currentPageButtons.components.find(
         (btn) => 'custom_id' in btn && btn.custom_id === btnID('aliases')
       );
@@ -332,6 +336,71 @@ export default class HelloCommand extends SlashCommand {
       else currentPage = 'aliases';
       return updatePage(btnCtx, 'aliases', `${active ? 'Show' : 'Hide'} Aliases`);
     });
+
+    const getSummaryRow = () =>
+      ({
+        type: ComponentType.ACTION_ROW,
+        components: [
+          summaryCtrl.current !== 0
+            ? {
+                type: ComponentType.BUTTON,
+                style: ButtonStyle.SECONDARY,
+                label: '',
+                custom_id: btnID('summary/prev'),
+                emoji: {
+                  name: '◀️'
+                }
+              }
+            : null,
+          {
+            type: ComponentType.BUTTON,
+            style: ButtonStyle.PRIMARY,
+            label: `Summary Page ${summaryCtrl.current + 1}/${summaryCtrl.pages.length}`,
+            custom_id: 'noop',
+            disabled: true
+          },
+          summaryCtrl.current !== summaryCtrl.pages.length - 1
+            ? {
+                type: ComponentType.BUTTON,
+                style: ButtonStyle.SECONDARY,
+                label: '',
+                custom_id: btnID('summary/next'),
+                emoji: {
+                  name: '▶️'
+                }
+              }
+            : null
+        ].filter((v) => !!v) as any
+      } as ComponentActionRow);
+
+    ctx.registerComponent(btnID('summary'), async (btnCtx) => {
+      if (await ensureUserCtx(btnCtx, ctx)) return;
+      const thisButton = currentPageButtons.components.find(
+        (btn) => 'custom_id' in btn && btn.custom_id === btnID('summary')
+      );
+      const active = thisButton.style === ButtonStyle.PRIMARY;
+      if (active) currentPage = 'main';
+      else currentPage = 'summary';
+
+      return updatePage(
+        btnCtx,
+        'summary',
+        `${active ? 'Expand' : 'Hide'} Summary`,
+        summaryCtrl.pages.length > 1 && !active ? getSummaryRow() : null
+      );
+    });
+
+    const summaryChange = async (btnCtx: ComponentContext, next = true) => {
+      if (await ensureUserCtx(btnCtx, ctx)) return;
+      if (next && summaryCtrl.current !== summaryCtrl.pages.length - 1) summaryCtrl.current++;
+      else if (summaryCtrl.current !== 0) summaryCtrl.current--;
+
+      pages.summary.description = summaryCtrl.pages[summaryCtrl.current];
+      return updatePage(btnCtx, 'summary', 'Hide Summary', getSummaryRow());
+    };
+
+    ctx.registerComponent(btnID('summary/prev'), (btnCtx) => summaryChange(btnCtx, false));
+    ctx.registerComponent(btnID('summary/next'), (btnCtx) => summaryChange(btnCtx, true));
   }
 
   async steamGame(ctx: CommandContext) {
