@@ -140,7 +140,10 @@ export default class HelloCommand extends SlashCommand {
           state + '\n',
           profile.real_name,
           profile.flag ? `:flag_${profile.flag}: ${profile.location}` : '',
-          `**Level \`${profile.level.formatted}\`**\n`,
+          `\n**Level:** ${profile.level.formatted}`,
+          profile.badge
+            ? `**Badge:** [${profile.badge.name}](${profile.badge.url}) - ${profile.badge.meta} (${profile.badge.xp.estimate} xp)`
+            : '',
           profile.primary_group
             ? `**Group:** [${profile.primary_group.name}](${profile.primary_group.url}) - ${profile.primary_group.member_count.estimate} member(s)`
             : ''
@@ -149,7 +152,6 @@ export default class HelloCommand extends SlashCommand {
           .join('\n')
       });
 
-      // TODO Show badge in inline field
       // TODO Show recent activity in last field (no inline)
     }
 
