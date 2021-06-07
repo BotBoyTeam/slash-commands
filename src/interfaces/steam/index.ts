@@ -182,7 +182,6 @@ export async function getProfile(id: string) {
         ok: false
       } as SteamProfileError;
   } catch (e) {
-    console.log(e)
     return {
       error: 'An error occurred with the API!',
       ok: false

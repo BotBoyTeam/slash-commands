@@ -105,13 +105,17 @@ export default class HelloCommand extends SlashCommand {
     if (profile.private === true) {
       pages.main.description = '*This profile is private.*';
     } else {
-      embedBase.description = getProfileSummary(profile.steamid['64']).split('\n').slice(0, 4).join('\n').slice(0, 500);
+      const summary = getProfileSummary(profile.steamid['64']).trim();
+      embedBase.description = summary.split('\n').slice(0, 4).join('\n').slice(0, 500);
+      if (summary.length > embedBase.description.length)
+        pages.summary = {
+          description: summary.slice(0, 2048)
+        };
 
-      if (profile.background_url) {
+      if (profile.background_url)
         pages.bg = {
           image: { url: profile.background_url }
         };
-      }
       // State
       let state = 'Unknown';
       switch (profile.status.state) {
@@ -185,6 +189,17 @@ export default class HelloCommand extends SlashCommand {
                 name: '🖥️'
               }
             }
+          : null,
+        pages.summary
+          ? {
+              type: ComponentType.BUTTON,
+              style: ButtonStyle.SECONDARY,
+              label: 'Expand Summary',
+              custom_id: btnID('summary'),
+              emoji: {
+                name: '📄'
+              }
+            }
           : null
       ].filter((v) => !!v) as any
     };
@@ -256,6 +271,17 @@ export default class HelloCommand extends SlashCommand {
       if (active) currentPage = 'main';
       else currentPage = 'bg';
       return updatePage(btnCtx, 'bg', `${active ? 'Show' : 'Hide'} Background`);
+    });
+
+    ctx.registerComponent(btnID('summary'), async (btnCtx) => {
+      if (btnCtx.user.id !== ctx.user.id) return btnCtx.acknowledge();
+      const thisButton = currentPageButtons.components.find(
+        (btn) => 'custom_id' in btn && btn.custom_id === btnID('summary')
+      );
+      const active = thisButton.style === ButtonStyle.PRIMARY;
+      if (active) currentPage = 'main';
+      else currentPage = 'summary';
+      return updatePage(btnCtx, 'summary', `${active ? 'Expand' : 'Hide'} Summary`);
     });
 
     ctx.registerComponent(btnID('aliases'), async (btnCtx) => {
