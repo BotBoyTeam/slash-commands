@@ -73,7 +73,7 @@ export default class HelloCommand extends SlashCommand {
             value: stripIndents`
               **SteamID2:** \`${profile.steamid['2']}\`
               **SteamID3:** \`${profile.steamid['3']}\`
-              **Account ID (SteamID32):** \`${profile.steamid['32']}\`
+              **SteamID32:** \`${profile.steamid['32']}\`
               **SteamID64:** \`${profile.steamid['64']}\`
               ${profile.custom_url ? `**Custom URL:** ${profile.custom_url}` : ''}
             `,
@@ -105,11 +105,7 @@ export default class HelloCommand extends SlashCommand {
     if (profile.private === true) {
       pages.main.description = '*This profile is private.*';
     } else {
-      pages.main.description = getProfileSummary(profile.steamid['64'])
-        .split('\n')
-        .slice(0, 4)
-        .join('\n')
-        .slice(0, 500);
+      embedBase.description = getProfileSummary(profile.steamid['64']).split('\n').slice(0, 4).join('\n').slice(0, 500);
 
       if (profile.background_url) {
         pages.bg = {
@@ -149,8 +145,20 @@ export default class HelloCommand extends SlashCommand {
             : ''
         ]
           .filter((v) => !!v)
-          .join('\n')
+          .join('\n'),
+        inline: true
       });
+
+      if (profile.recent_activity)
+        pages.main.fields.push({
+          name: 'Recent Activity',
+          value: stripIndents`
+            **${profile.recent_activity.playtime.formatted}** hours of playtime since the last 2 weeks
+            ${profile.recent_activity.games
+              .map((game) => `**[${game.name}](${game.url})** - ${game.hours.formatted} hours`)
+              .join('\n')}
+          `
+        });
 
       // TODO Show recent activity in last field (no inline)
     }

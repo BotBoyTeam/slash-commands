@@ -105,7 +105,7 @@ export interface SteamPublicProfile extends Omit<SteamPrivateProfile, 'private'>
   primary_group: SteamPrimaryGroup | null;
   private: false;
   real_name: string;
-  recent_activity: SteamRecentActivity;
+  recent_activity: SteamRecentActivity | null;
   status: {
     state: SteamProfileStatusState;
     game?: string;
