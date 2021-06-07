@@ -1,6 +1,7 @@
 import needle from 'needle';
 
 export type SteamProfileCountType =
+  | 'awards'
   | 'badges'
   | 'games'
   | 'groups'
@@ -99,6 +100,7 @@ export interface SteamPublicProfile extends Omit<SteamPrivateProfile, 'private'>
   created: number;
   flag: string | null;
   level: SteamIntegerFormat;
+  location: string | null;
   primary_group: SteamPrimaryGroup | null;
   private: false;
   real_name: string;
@@ -155,8 +157,8 @@ export async function getProfile(id: string) {
   try {
     const res = await needle('get', `https://api.snaz.in/v2/steam/user-profile/${encodeURIComponent(id)}`, {
       open_timeout: 2000,
-      response_timeout: 1000,
-      read_timeout: 1000
+      response_timeout: 2000,
+      read_timeout: 2000
     });
     if (res.statusCode >= 200 && res.statusCode < 300) {
       const profile = res.body as SteamProfile;
@@ -171,11 +173,15 @@ export async function getProfile(id: string) {
         });
       return profile;
     } else
-      throw new Error(
-        (res.body as SteamProfileError).error || `The service gave us a ${res.statusCode}! Try again later!`
-      );
+      return {
+        error: (res.body as SteamProfileError).error || `The service gave us a ${res.statusCode}! Try again later!`,
+        ok: false
+      } as SteamProfileError;
   } catch (e) {
-    throw new Error('An error occurred with the API!');
+    return {
+      error: 'An error occurred with the API!',
+      ok: false
+    } as SteamProfileError;
   }
 }
 
@@ -190,19 +196,20 @@ export async function getProfileAliases(id: string) {
     const res = await needle('get', `https://steamcommunity.com/profiles/${encodeURIComponent(id)}/ajaxaliases/`, {
       open_timeout: 2000,
       response_timeout: 1000,
-      read_timeout: 1000
+      read_timeout: 1000,
+      follow_max: 1
     });
     if (res.statusCode >= 200 && res.statusCode < 300) {
       if (res.body.includes('The specified profile could not be found.'))
-        throw new Error('That profile could not be found!');
+        return new Error('That profile could not be found!');
       const aliases = res.body as SteamAlias[];
       profileAliasesCache.set(id, {
         c: Date.now(),
         a: aliases
       });
       return aliases;
-    } else throw new Error(`The service gave us a ${res.statusCode}! Try again later!`);
+    } else return new Error(`The service gave us a ${res.statusCode}! Try again later!`);
   } catch (e) {
-    throw new Error('An error occurred with the API!');
+    return new Error('An error occurred with the API!');
   }
 }
