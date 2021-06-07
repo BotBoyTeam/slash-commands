@@ -9,7 +9,7 @@ import {
   ComponentActionRow,
   ComponentContext
 } from 'slash-create';
-import { getProfile, getProfileAliases } from '../interfaces/steam';
+import { getProfile, getProfileAliases, getProfileSummary } from '../interfaces/steam';
 import { stripIndents } from 'common-tags';
 import clone from 'lodash.clonedeep';
 
@@ -105,6 +105,12 @@ export default class HelloCommand extends SlashCommand {
     if (profile.private === true) {
       pages.main.description = '*This profile is private.*';
     } else {
+      pages.main.description = getProfileSummary(profile.steamid['64'])
+        .split('\n')
+        .slice(0, 4)
+        .join('\n')
+        .slice(0, 500);
+
       if (profile.background_url) {
         pages.bg = {
           image: { url: profile.background_url }

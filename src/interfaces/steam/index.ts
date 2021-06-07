@@ -1,4 +1,5 @@
 import needle from 'needle';
+import { convert } from './turndown';
 
 export type SteamProfileCountType =
   | 'awards'
@@ -125,7 +126,7 @@ export interface SteamAlias {
   timechanged: string;
 }
 
-const profileCache = new Map<string, { c: number; p: SteamProfile }>();
+const profileCache = new Map<string, { c: number; p: SteamProfile; s: string }>();
 const profileAliasesCache = new Map<string, { c: number; a: SteamAlias[] }>();
 const profileCustomURLCache = new Map<string, { c: number; i: string }>();
 
@@ -156,15 +157,18 @@ export async function getProfile(id: string) {
 
   try {
     const res = await needle('get', `https://api.snaz.in/v2/steam/user-profile/${encodeURIComponent(id)}`, {
-      open_timeout: 2000,
-      response_timeout: 2000,
-      read_timeout: 2000
+      open_timeout: 5000,
+      response_timeout: 5000,
+      read_timeout: 5000
     });
     if (res.statusCode >= 200 && res.statusCode < 300) {
       const profile = res.body as SteamProfile;
+      let summary = '';
+      if ('summary' in profile && profile.summary.raw) summary = convert(profile.summary.raw);
       profileCache.set(profile.steamid['64'], {
         c: Date.now(),
-        p: profile
+        p: profile,
+        s: summary
       });
       if (profile.custom_url)
         profileCustomURLCache.set(profile.custom_url.toLowerCase(), {
@@ -178,6 +182,7 @@ export async function getProfile(id: string) {
         ok: false
       } as SteamProfileError;
   } catch (e) {
+    console.log(e)
     return {
       error: 'An error occurred with the API!',
       ok: false
@@ -212,4 +217,8 @@ export async function getProfileAliases(id: string) {
   } catch (e) {
     return new Error('An error occurred with the API!');
   }
+}
+
+export function getProfileSummary(id: string) {
+  return profileCache.get(id).s;
 }
