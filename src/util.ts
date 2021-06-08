@@ -1,4 +1,7 @@
+import dayjs from 'dayjs';
 import { CommandContext, ComponentContext } from 'slash-create';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 export interface SplitOptions {
   /** Maximum character length per message piece */
@@ -48,4 +51,13 @@ export async function ensureUserCtx(btnCtx: ComponentContext, ctx: CommandContex
     return true;
   }
   return false;
+}
+
+/**
+ * Convert a date into a common format string.
+ * @param date The date to use
+ */
+export async function dateFormat(date: string | number | Date | dayjs.Dayjs) {
+  const day = dayjs(date);
+  return `${day.format('LL')} (${day.fromNow()})`;
 }

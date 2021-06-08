@@ -12,7 +12,7 @@ import {
 import { getProfile, getProfileAliases, getProfileSummary } from '../interfaces/steam';
 import { stripIndents } from 'common-tags';
 import clone from 'lodash.clonedeep';
-import { ensureUserCtx, splitMessage } from '../util';
+import { dateFormat, ensureUserCtx, splitMessage } from '../util';
 
 export default class HelloCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
@@ -128,27 +128,27 @@ export default class HelloCommand extends SlashCommand {
       let state = 'Unknown';
       switch (profile.status.state) {
         case 'offline':
-          state = '*Currently Offline*';
+          state = '⚪ *Currently Offline*';
           break;
         case 'online':
-          state = 'Currently Online';
+          state = '🔵 Currently Online';
           embedBase.color = 0x57cbde;
           break;
         case 'in-game':
-          state = `Currently In-Game: ${profile.status.game}`;
+          state = `🟢 Currently In-Game: ${profile.status.game}`;
           embedBase.color = 0x90ba3c;
           break;
       }
 
       // Information
-      // TODO Show created timestamp in desc (dayjs)
       pages.main.fields.unshift({
         name: 'Information',
         value: [
-          state + '\n',
+          state,
           profile.real_name,
           profile.flag ? `:flag_${profile.flag}: ${profile.location}` : '',
           `\n**Level:** ${profile.level.formatted}`,
+          `**Joined:** ${dateFormat(profile.created * 1000)}`,
           profile.badge
             ? `**Badge:** [${profile.badge.name}](${profile.badge.url}) - ${profile.badge.meta} (${profile.badge.xp.estimate} xp)`
             : '',
@@ -171,8 +171,6 @@ export default class HelloCommand extends SlashCommand {
               .join('\n')}
           `
         });
-
-      // TODO Show recent activity in last field (no inline)
     }
 
     const pageButtons: ComponentActionRow = {
