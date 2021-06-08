@@ -14,7 +14,7 @@ import { stripIndents } from 'common-tags';
 import clone from 'lodash.clonedeep';
 import { dateFormat, ensureUserCtx, splitMessage } from '../util';
 
-export default class HelloCommand extends SlashCommand {
+export default class SteamCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
     super(creator, {
       name: 'steam',

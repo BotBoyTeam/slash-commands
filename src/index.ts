@@ -9,8 +9,8 @@ if (path.parse(process.cwd()).name === 'dist') dotenvPath = path.join(process.cw
 
 dotenv.config({ path: dotenvPath });
 
-const logger = new CatLoggr().setLevel(process.env.COMMANDS_DEBUG === 'true' ? 'debug' : 'info');
-const creator = new SlashCreator({
+export const logger = new CatLoggr().setLevel(process.env.COMMANDS_DEBUG === 'true' ? 'debug' : 'info');
+export const creator = new SlashCreator({
   applicationID: process.env.DISCORD_APP_ID,
   publicKey: process.env.DISCORD_PUBLIC_KEY,
   token: process.env.DISCORD_BOT_TOKEN,

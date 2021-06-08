@@ -61,3 +61,15 @@ export async function dateFormat(date: string | number | Date | dayjs.Dayjs) {
   const day = dayjs(date);
   return `${day.format('LL')} (${day.fromNow()})`;
 }
+
+/**
+ * Convert a string list into a common format string.
+ * @param list The string list
+ * @param limit The amount of items to show
+ * @param sep The seperating string
+ */
+export async function formatStringList(list: string[], limit = 10, sep = '\n') {
+  return [...list.slice(0, 10), list.length > limit ? `*(${(list.length - limit).toLocaleString()} more)*` : '']
+    .filter((v) => !!v)
+    .join(sep);
+}
