@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { SlashCreator, FastifyServer } from 'slash-create';
 import path from 'path';
 import CatLoggr from 'cat-loggr/ts';
+import { startAll } from './cron';
 
 let dotenvPath = path.join(process.cwd(), '.env');
 if (path.parse(process.cwd()).name === 'dist') dotenvPath = path.join(process.cwd(), '..', '.env');
@@ -32,6 +33,6 @@ creator
   .syncCommands()
   .startServer();
 
-// TODO init crons
+startAll();
 
 // This should serve in localhost:8020/interactions
