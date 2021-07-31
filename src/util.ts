@@ -3,6 +3,12 @@ import { CommandContext, ComponentContext } from 'slash-create';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
+export interface APISnazIntegerFormat {
+  estimate: string;
+  formatted: string;
+  value: number;
+}
+
 export interface SplitOptions {
   /** Maximum character length per message piece */
   maxLength?: number;

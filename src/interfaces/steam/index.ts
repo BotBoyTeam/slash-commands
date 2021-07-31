@@ -1,4 +1,5 @@
 import needle from 'needle';
+import { APISnazIntegerFormat } from '../../util';
 import { convert } from './turndown';
 
 export type SteamProfileCountType =
@@ -18,12 +19,6 @@ export type SteamProfileBanType = 'none' | 'one' | 'multiple';
 
 export type SteamProfileStatusState = 'offline' | 'online' | 'in-game';
 
-export interface SteamIntegerFormat {
-  estimate: string;
-  formatted: string;
-  value: number;
-}
-
 export interface SteamProfileError {
   error: string;
   ok: false;
@@ -36,7 +31,7 @@ export interface SteamPrivateProfile {
   username: string;
   bans: {
     community: boolean;
-    days_since_last: SteamIntegerFormat | null;
+    days_since_last: APISnazIntegerFormat | null;
     game: SteamProfileBanType;
     trade: boolean;
     vac: SteamProfileBanType;
@@ -55,27 +50,27 @@ export interface SteamBadge {
   meta: string;
   name: string;
   url: string;
-  xp: SteamIntegerFormat;
+  xp: APISnazIntegerFormat;
 }
 
 export interface SteamPrimaryGroup {
-  member_count: SteamIntegerFormat;
+  member_count: APISnazIntegerFormat;
   name: string;
   url: string;
 }
 
 export interface SteamRecentActivity {
   games: SteamRecentActivityGame[];
-  playtime: SteamIntegerFormat;
+  playtime: APISnazIntegerFormat;
 }
 
 export interface SteamRecentActivityGame {
   achievement_progress: {
-    completed: SteamIntegerFormat;
-    total: SteamIntegerFormat;
+    completed: APISnazIntegerFormat;
+    total: APISnazIntegerFormat;
   };
   banner_image: string;
-  hours: SteamIntegerFormat;
+  hours: APISnazIntegerFormat;
   last_played: 'in-game' | string;
   name: string;
   url: string;
@@ -89,18 +84,18 @@ export interface SteamPublicProfile extends Omit<SteamPrivateProfile, 'private'>
   badge: SteamBadge | null;
   bans: {
     community: boolean;
-    days_since_last: SteamIntegerFormat | null;
+    days_since_last: APISnazIntegerFormat | null;
     game: SteamProfileBanType;
     trade: boolean;
     vac: SteamProfileBanType;
   };
   can_comment: boolean;
   counts: {
-    [key: string]: SteamIntegerFormat | null;
+    [key: string]: APISnazIntegerFormat | null;
   };
   created: number;
   flag: string | null;
-  level: SteamIntegerFormat;
+  level: APISnazIntegerFormat;
   location: string | null;
   primary_group: SteamPrimaryGroup | null;
   private: false;
