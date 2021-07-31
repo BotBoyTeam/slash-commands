@@ -1,6 +1,6 @@
 import { SlashCommand, CommandOptionType, SlashCreator, CommandContext } from 'slash-create';
 import { formatStringList } from '../util';
-import { getServer } from '../interfaces/minecraft';
+import { getServer } from '../interfaces/minecraft/server';
 
 export default class MinecraftCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
