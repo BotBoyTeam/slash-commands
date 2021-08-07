@@ -6,6 +6,11 @@ export interface APISnazIntegerFormat {
   value: number;
 }
 
+export interface APISnazError {
+  error: string;
+  ok: false;
+}
+
 export interface SplitOptions {
   /** Maximum character length per message piece */
   maxLength?: number;

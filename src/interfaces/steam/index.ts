@@ -1,5 +1,5 @@
 import needle from 'needle';
-import { APISnazIntegerFormat } from '../../util';
+import { APISnazError, APISnazIntegerFormat } from '../../util';
 import { convert } from './turndown';
 
 export type SteamProfileCountType =
@@ -18,11 +18,6 @@ export type SteamProfileCountType =
 export type SteamProfileBanType = 'none' | 'one' | 'multiple';
 
 export type SteamProfileStatusState = 'offline' | 'online' | 'in-game';
-
-export interface SteamProfileError {
-  error: string;
-  ok: false;
-}
 
 export interface SteamPrivateProfile {
   avatar: string;
@@ -114,7 +109,7 @@ export interface SteamPublicProfile extends Omit<SteamPrivateProfile, 'private'>
 }
 
 export type SteamProfile = SteamPrivateProfile | SteamPublicProfile;
-export type SteamProfileResult = SteamProfile | SteamProfileError;
+export type SteamProfileResult = SteamProfile | APISnazError;
 
 export interface SteamAlias {
   newname: string;
@@ -173,14 +168,14 @@ export async function getProfile(id: string) {
       return profile;
     } else
       return {
-        error: (res.body as SteamProfileError).error || `The service gave us a ${res.statusCode}! Try again later!`,
+        error: (res.body as APISnazError).error || `The service gave us a ${res.statusCode}! Try again later!`,
         ok: false
-      } as SteamProfileError;
+      } as APISnazError;
   } catch (e) {
     return {
       error: 'An error occurred with the API!',
       ok: false
-    } as SteamProfileError;
+    } as APISnazError;
   }
 }
 
