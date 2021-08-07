@@ -7,7 +7,8 @@ import {
   ButtonStyle,
   MessageEmbedOptions,
   ComponentActionRow,
-  ComponentContext
+  ComponentContext,
+  ComponentButton
 } from 'slash-create';
 import { getProfile, getProfileAliases, getProfileSummary } from '../interfaces/steam';
 import { stripIndents } from 'common-tags';
@@ -240,7 +241,7 @@ export default class SteamCommand extends SlashCommand {
       newLabel?: string,
       extraRow?: ComponentActionRow
     ) => {
-      currentPageButtons.components = pageButtons.components.map((btn) => {
+      currentPageButtons.components = pageButtons.components.map((btn: ComponentButton) => {
         btn = Object.assign({}, btn);
         if ('custom_id' in btn) {
           if (btn.custom_id === btnID(currentPage)) {
@@ -279,7 +280,7 @@ export default class SteamCommand extends SlashCommand {
       if (await ensureUserCtx(btnCtx, ctx)) return;
       const thisButton = currentPageButtons.components.find(
         (btn) => 'custom_id' in btn && btn.custom_id === btnID('bg')
-      );
+      ) as ComponentButton;
       const active = thisButton.style === ButtonStyle.PRIMARY;
       if (active) currentPage = 'main';
       else currentPage = 'bg';
@@ -290,12 +291,12 @@ export default class SteamCommand extends SlashCommand {
       if (await ensureUserCtx(btnCtx, ctx)) return;
       const thisButton = currentPageButtons.components.find(
         (btn) => 'custom_id' in btn && btn.custom_id === btnID('aliases')
-      );
+      ) as ComponentButton;
       const active = thisButton.style === ButtonStyle.PRIMARY;
       if (!pages.aliases) {
         const aliases = await getProfileAliases(profile.steamid['64']);
         if (aliases instanceof Error) {
-          pageButtons.components = pageButtons.components.map((btn) => {
+          pageButtons.components = pageButtons.components.map((btn: ComponentButton) => {
             if ('custom_id' in btn && btn.custom_id === btnID('aliases')) {
               btn.disabled = true;
               btn.custom_id = 'noop';
@@ -308,7 +309,7 @@ export default class SteamCommand extends SlashCommand {
           return updatePage(btnCtx);
         }
         if (aliases.length === 0) {
-          pageButtons.components = pageButtons.components.map((btn) => {
+          pageButtons.components = pageButtons.components.map((btn: ComponentButton) => {
             if ('custom_id' in btn && btn.custom_id === btnID('aliases')) {
               btn.style = ButtonStyle.SECONDARY;
               btn.disabled = true;
@@ -375,7 +376,7 @@ export default class SteamCommand extends SlashCommand {
       if (await ensureUserCtx(btnCtx, ctx)) return;
       const thisButton = currentPageButtons.components.find(
         (btn) => 'custom_id' in btn && btn.custom_id === btnID('summary')
-      );
+      ) as ComponentButton;
       const active = thisButton.style === ButtonStyle.PRIMARY;
       if (active) currentPage = 'main';
       else currentPage = 'summary';

@@ -23,7 +23,7 @@
     "fastify": "^3.9.2",
     "lodash.clonedeep": "^4.5.0",
     "needle": "^2.6.0",
-    "slash-create": "^3.2.3",
+    "slash-create": "^3.4.2",
     "turndown": "^7.0.0"
   },
   "devDependencies": {
