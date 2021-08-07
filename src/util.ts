@@ -65,9 +65,8 @@ export async function ensureUserCtx(btnCtx: ComponentContext, ctx: CommandContex
  * Convert a date into a common format string.
  * @param date The date to use
  */
-export function dateFormat(date: string | number | Date | dayjs.Dayjs) {
-  const day = dayjs(date);
-  return `${day.format('LL')} (${day.fromNow()})`;
+export function dateFormat(date: number, format: string = 'f') {
+  return `<t:${date / 1000}:${format}> (<t:${date / 1000}:R>)`;
 }
 
 /**
