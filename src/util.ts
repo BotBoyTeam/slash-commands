@@ -80,3 +80,18 @@ export async function formatStringList(list: string[], limit = 10, sep = '\n') {
     .filter((v) => !!v)
     .join(sep);
 }
+
+export function randInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function randArray<T = any>(array: T[]): T {
+  return array[randInt(0, array.length - 1)];
+}
+
+export function times(number: number, func: (i: number) => any) {
+  return ' '
+    .repeat(number)
+    .split('')
+    .map((_, i) => func(i));
+}
