@@ -95,3 +95,7 @@ export function times(number: number, func: (i: number) => any) {
     .split('')
     .map((_, i) => func(i));
 }
+
+export function cutoffText(text: string, limit = 2000) {
+  return text.length > limit ? text.slice(0, limit - 1) + '…' : text;
+}
