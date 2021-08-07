@@ -1,9 +1,4 @@
-import dayjs from 'dayjs';
 import { CommandContext, ComponentContext } from 'slash-create';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-dayjs.extend(relativeTime);
-dayjs.extend(localizedFormat);
 
 export interface APISnazIntegerFormat {
   estimate: string;

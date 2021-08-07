@@ -149,7 +149,7 @@ export default class SteamCommand extends SlashCommand {
           profile.real_name,
           profile.flag ? `:flag_${profile.flag}: ${profile.location}` : '',
           `\n**Level:** ${profile.level.formatted}`,
-          `**Joined:** ${dateFormat(profile.created * 1000)}`,
+          `**Joined:** ${dateFormat(profile.created * 1000, 'D')}`,
           profile.badge
             ? `**Badge:** [${profile.badge.name}](${profile.badge.url}) - ${profile.badge.meta} (${profile.badge.xp.estimate} xp)`
             : '',
