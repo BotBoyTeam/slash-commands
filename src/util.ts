@@ -63,7 +63,7 @@ export async function ensureUserCtx(btnCtx: ComponentContext, ctx: CommandContex
  * Convert a date into a common format string.
  * @param date The date to use
  */
-export async function dateFormat(date: string | number | Date | dayjs.Dayjs) {
+export function dateFormat(date: string | number | Date | dayjs.Dayjs) {
   const day = dayjs(date);
   return `${day.format('LL')} (${day.fromNow()})`;
 }
