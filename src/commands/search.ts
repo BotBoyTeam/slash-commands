@@ -14,13 +14,11 @@ import {
   CommandOptionType,
   SlashCreator,
   CommandContext,
-  ApplicationCommandOptionChoice,
-  ComponentType,
-  ButtonStyle
+  ApplicationCommandOptionChoice
 } from 'slash-create';
 import { getVQD } from '../interfaces/ddg';
 import { decode } from 'html-entities';
-import { cutoffText } from '../util';
+import { cutoffText, quickLinkButton } from '../util';
 
 const SafeSearchChoices: ApplicationCommandOptionChoice[] = [
   {
@@ -363,17 +361,10 @@ export default class SearchCommand extends SlashCommand {
         }
       ],
       components: [
-        {
-          type: ComponentType.ACTION_ROW,
-          components: [
-            {
-              type: ComponentType.BUTTON,
-              style: ButtonStyle.LINK,
-              url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}&ia=web`,
-              label: 'More on DuckDuckGo'
-            }
-          ]
-        }
+        quickLinkButton({
+          url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}&ia=web`,
+          label: 'More on DuckDuckGo'
+        })
       ],
       ephemeral
     });
@@ -418,19 +409,19 @@ export default class SearchCommand extends SlashCommand {
         }
       ],
       components: [
-        {
-          type: ComponentType.ACTION_ROW,
-          components: [
-            {
-              type: ComponentType.BUTTON,
-              style: ButtonStyle.LINK,
-              url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}&iar=images&iax=images&ia=images`,
-              label: 'More on DuckDuckGo'
-            }
-          ]
-        }
+        quickLinkButton({
+          url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}&iar=images&iax=images&ia=images`,
+          label: 'More on DuckDuckGo'
+        })
       ],
       ephemeral
+    });
+  }
+
+  async onError(err: Error, ctx: CommandContext) {
+    return ctx.send({
+      content: 'An error occurred with the API.\n' + err,
+      ephemeral: true
     });
   }
 }
