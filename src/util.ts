@@ -1,4 +1,11 @@
-import { CommandContext, ComponentContext } from 'slash-create';
+import {
+  ButtonStyle,
+  CommandContext,
+  ComponentActionRow,
+  ComponentButtonLink,
+  ComponentContext,
+  ComponentType
+} from 'slash-create';
 
 export interface APISnazIntegerFormat {
   estimate: string;
@@ -102,4 +109,17 @@ export function times(number: number, func: (i: number) => any) {
 
 export function cutoffText(text: string, limit = 2000) {
   return text.length > limit ? text.slice(0, limit - 1) + '…' : text;
+}
+
+export function quickLinkButton(btn: Omit<ComponentButtonLink, 'type' | 'style'>): ComponentActionRow {
+  return {
+    type: ComponentType.ACTION_ROW,
+    components: [
+      {
+        type: ComponentType.BUTTON,
+        style: ButtonStyle.LINK,
+        ...btn
+      }
+    ]
+  };
 }
