@@ -89,6 +89,10 @@ export function randArray<T = any>(array: T[]): T {
   return array[randInt(0, array.length - 1)];
 }
 
+export function shuffleArray<T = any>(array: T[]): T[] {
+  return array.sort(() => Math.random() - 0.5);
+}
+
 export function times(number: number, func: (i: number) => any) {
   return ' '
     .repeat(number)
