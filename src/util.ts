@@ -28,6 +28,7 @@ export interface SplitOptions {
   /** Text to append to every piece except the last */
   append?: string;
 }
+
 /**
  * Splits a string into multiple chunks at a designated character that do not exceed a specific length.
  * @param string text Content to split
@@ -60,7 +61,7 @@ export function splitMessage(
  */
 export async function ensureUserCtx(btnCtx: ComponentContext, ctx: CommandContext) {
   if (btnCtx.user.id !== ctx.user.id) {
-    await btnCtx.send('Only the user who invoked this command can use the controls!.', {
+    await btnCtx.send('Only the user who invoked this command can use the controls!', {
       ephemeral: true
     });
     return true;
