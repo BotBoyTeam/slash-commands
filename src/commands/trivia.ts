@@ -49,7 +49,7 @@ export default class TriviaCommand extends SlashCommand {
       ],
       throttling: {
         usages: 1,
-        duration: 10
+        duration: 20
       }
     });
   }
