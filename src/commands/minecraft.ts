@@ -48,11 +48,11 @@ export default class MinecraftCommand extends SlashCommand {
   async run(ctx: CommandContext) {
     if (ctx.subcommands[0] === 'user') return this.mcUser(ctx);
     if (ctx.subcommands[0] === 'server') return this.mcServer(ctx);
-    else
-      return {
-        content: 'Unknown subcommand.',
-        ephemeral: true
-      };
+
+    return {
+      content: 'Unknown subcommand.',
+      ephemeral: true
+    };
   }
 
   async mcServer(ctx: CommandContext) {
