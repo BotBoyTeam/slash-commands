@@ -3,7 +3,7 @@ import { SlashCommand, CommandOptionType, SlashCreator, CommandContext } from 's
 import { oneLine, stripIndents } from 'common-tags';
 import { quickLinkButton } from '../util';
 
-export default class TextCommand extends SlashCommand {
+export default class CurrencyCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
     super(creator, {
       name: 'currency',
