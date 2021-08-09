@@ -1,6 +1,7 @@
 import { SlashCommand, CommandOptionType, SlashCreator, CommandContext } from 'slash-create';
-import { formatStringList } from '../util';
+import { formatStringList, quickLinkButton } from '../util';
 import { getServer } from '../interfaces/minecraft/server';
+import { getUser } from '../interfaces/minecraft/user';
 
 export default class MinecraftCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
@@ -24,6 +25,19 @@ export default class MinecraftCommand extends SlashCommand {
               type: CommandOptionType.BOOLEAN,
               name: 'bedrock',
               description: 'Whether to get info from a Bedrock server. False by default.'
+            }
+          ]
+        },
+        {
+          type: CommandOptionType.SUB_COMMAND,
+          name: 'user',
+          description: 'Find a Minecraft user.',
+          options: [
+            {
+              type: CommandOptionType.STRING,
+              name: 'username',
+              description: 'The username or UUID of the user to get.',
+              required: true
             }
           ]
         }
@@ -99,6 +113,22 @@ export default class MinecraftCommand extends SlashCommand {
   }
 
   async mcUser(ctx: CommandContext) {
-    // TODO minecraft user search
+    const user = await getUser(ctx.options.user.username);
+    if (user instanceof Error)
+      return {
+        content: `❌ ${user.message}`,
+        ephemeral: true
+      };
+
+    await ctx.send({
+      embeds: [
+        {
+          title: user.name,
+          footer: { text: `UUID: ${user.id}` },
+          image: { url: `https://visage.surgeplay.com/bust/1000/${user.id}` }
+        }
+      ],
+      components: [quickLinkButton({ label: 'View on NameMC', url: `https://namemc.com/profile/${user.name}` })]
+    });
   }
 }
