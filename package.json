@@ -2,6 +2,7 @@
   "name": "botboy-slash-commands",
   "version": "1.0.0",
   "description": "Slash commands for BotBoy",
+  "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
     "start": "NODE_ENV=production cd dist && node index.js",
