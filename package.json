@@ -5,7 +5,8 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "start": "NODE_ENV=production cd dist && node index.js",
+    "start:prod": "npx shx NODE_ENV=production cd dist && node index.js",
+    "start": "cd dist && node index.js",
     "build": "npx tsc",
     "dev": "devScript",
     "lint": "npx eslint --ext .ts ./src",
@@ -18,6 +19,7 @@
     "cat-loggr": "^1.1.0",
     "common-tags": "^1.8.0",
     "cron": "^1.8.2",
+    "dayjs": "^1.10.6",
     "dotenv": "^8.2.0",
     "duck-duck-scrape": "^2.1.0",
     "fastify": "^3.9.2",

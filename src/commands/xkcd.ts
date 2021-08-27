@@ -43,7 +43,7 @@ export default class XKCDCommand extends SlashCommand {
       ],
       throttling: {
         usages: 1,
-        duration: 10
+        duration: 5
       }
     });
   }
