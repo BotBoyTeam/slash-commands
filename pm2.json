@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "slash-commands",
+      "name": "BotBoy Slash Commands",
 			"script": "node",
 			"args": "dist/index.js"
     }
