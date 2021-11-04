@@ -8,12 +8,16 @@ import {
   MessageEmbedOptions,
   ComponentActionRow,
   ComponentContext,
-  ComponentButton
+  ComponentButton,
+  AutocompleteContext
 } from 'slash-create';
 import { getProfile, getProfileAliases, getProfileSummary } from '../interfaces/steam';
 import { stripIndents } from 'common-tags';
+import { decode } from 'html-entities';
 import clone from 'lodash.clonedeep';
-import { dateFormat, ensureUserCtx, splitMessage } from '../util';
+import fuzzy from 'fuzzy';
+import { cutoffText, dateFormat, ensureUserCtx, splitMessage } from '../util';
+import { applist, fetchSteamApp } from '../interfaces/steam/store';
 
 export default class SteamCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
@@ -34,9 +38,37 @@ export default class SteamCommand extends SlashCommand {
               required: true
             }
           ]
+        },
+        {
+          type: CommandOptionType.SUB_COMMAND,
+          name: 'game',
+          description: 'Find a Steam application.',
+          options: [
+            {
+              type: CommandOptionType.STRING,
+              name: 'query',
+              description: 'Search the name of an app or use an AppID.',
+              required: true,
+              autocomplete: true
+            }
+          ]
         }
       ]
     });
+  }
+
+  async autocomplete(ctx: AutocompleteContext) {
+    const value = ctx.options.game.query;
+    if (!value) return [];
+
+    const result = fuzzy.filter(value, applist, {
+      extract: (app) => app.name
+    });
+    return ctx.sendResults(
+      result
+        .map((res) => ({ name: cutoffText(res.original.name, 100), value: res.original.appid.toString() }))
+        .slice(0, 25)
+    );
   }
 
   async run(ctx: CommandContext) {
@@ -403,6 +435,101 @@ export default class SteamCommand extends SlashCommand {
   }
 
   async steamGame(ctx: CommandContext) {
+    const appid = parseInt(ctx.options.game.query, 10);
+    if (isNaN(appid) || appid <= 0)
+      return {
+        content: '❌ Invalid App ID.',
+        ephemeral: true
+      };
+
+    const app = await fetchSteamApp(appid);
+    if (!app)
+      return {
+        content: '❌ This app does not exist.',
+        ephemeral: true
+      };
+
+    return {
+      embeds: [
+        {
+          title: app.name,
+          url: `https://store.steampowered.com/app/${app.steam_appid}`,
+          color: !app.release_date.coming_soon && app.price_overview.discount_percent ? 0xa4d007 : 0x407999,
+          description: stripIndents`
+            ${decode(app.short_description)}
+
+            **Platforms:** ${[
+              app.platforms.windows ? '<:SteamWindows:905637602848276491>' : false,
+              app.platforms.mac ? '<:SteamMac:905637667398631435>' : false,
+              app.platforms.linux ? '<:SteamLinux:905637706023993415>' : false
+            ]
+              .filter((v) => !!v)
+              .join('')}
+            **Developers:** ${app.developers.join(', ')}
+            **Publishers:** ${app.publishers.join(', ')}
+            **Genres:** ${app.genres.map((g) => g.description).join(', ')}
+            **Features:** ${app.categories.map((g) => g.description).join(', ')}
+            ${app.metacritic ? `**Metacritic:** [${app.metacritic.score}](${app.metacritic.url})` : ''}
+          `,
+          fields: [
+            ...(!app.release_date.coming_soon
+              ? [
+                  {
+                    name: 'Price',
+                    value: app.is_free
+                      ? 'Free'
+                      : app.price_overview.discount_percent
+                      ? `~~${app.price_overview.initial_formatted}~~ **${app.price_overview.final_formatted}** \`-${app.price_overview.discount_percent}%\``
+                      : app.price_overview.final_formatted,
+                    inline: true
+                  }
+                ]
+              : [
+                  {
+                    name: 'Release Date',
+                    value: app.release_date.date,
+                    inline: true
+                  }
+                ]),
+            {
+              name: 'Links',
+              value: stripIndents`
+                **steam://run/${app.steam_appid}**
+                ${app.website ? `[Website](${app.website})` : ''}
+                ${app.support_info.url ? `[Support URL](${app.support_info.url})` : ''}
+              `,
+              inline: true
+            }
+          ],
+          ...(app.header_image
+            ? {
+                image: {
+                  url: app.header_image
+                }
+              }
+            : {})
+        }
+      ],
+      components: [
+        {
+          type: ComponentType.ACTION_ROW,
+          components: [
+            {
+              type: ComponentType.BUTTON,
+              style: ButtonStyle.LINK,
+              label: 'View on Steam Store',
+              url: `https://store.steampowered.com/app/${app.steam_appid}`
+            },
+            {
+              type: ComponentType.BUTTON,
+              style: ButtonStyle.LINK,
+              label: 'View on SteamDB',
+              url: `https://steamdb.info/app/${app.steam_appid}`
+            }
+          ]
+        }
+      ]
+    };
     // TODO steam game search
   }
 }

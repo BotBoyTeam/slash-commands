@@ -3,6 +3,7 @@ import { SlashCreator, FastifyServer } from 'slash-create';
 import path from 'path';
 import CatLoggr from 'cat-loggr/ts';
 import { startAll } from './cron';
+import { fetchAppList } from './interfaces/steam/store';
 
 let dotenvPath = path.join(process.cwd(), '.env');
 if (path.parse(process.cwd()).name === 'dist') dotenvPath = path.join(process.cwd(), '..', '.env');
@@ -34,5 +35,6 @@ creator
   .startServer();
 
 startAll();
+fetchAppList();
 
 // This should serve in localhost:8020/interactions
