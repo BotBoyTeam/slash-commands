@@ -82,6 +82,7 @@ export default class DictionaryCommand extends SlashCommand {
     return {
       embeds: [
         {
+          color: 0xff6b12,
           title: cutoffText(`**${hyphenation || word}**${ahd ? ` *(${ahd.raw})*` : ''}`, 256),
           url: `https://www.wordnik.com/words/${word}`,
           description: `${definitions
@@ -102,7 +103,13 @@ export default class DictionaryCommand extends SlashCommand {
           ].filter((v) => !!v.value)
         }
       ],
-      components: [quickLinkButton({ label: 'More on Wordnik', url: `https://www.wordnik.com/words/${word}` })]
+      components: [
+        quickLinkButton({
+          label: 'More on Wordnik',
+          url: `https://www.wordnik.com/words/${word}`,
+          emoji: { id: '906184580573306951' }
+        })
+      ]
     };
   }
 }

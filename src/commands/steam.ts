@@ -518,13 +518,15 @@ export default class SteamCommand extends SlashCommand {
               type: ComponentType.BUTTON,
               style: ButtonStyle.LINK,
               label: 'View on Steam Store',
-              url: `https://store.steampowered.com/app/${app.steam_appid}`
+              url: `https://store.steampowered.com/app/${app.steam_appid}`,
+              emoji: { id: '314349923044687872' }
             },
             {
               type: ComponentType.BUTTON,
               style: ButtonStyle.LINK,
               label: 'View on SteamDB',
-              url: `https://steamdb.info/app/${app.steam_appid}`
+              url: `https://steamdb.info/app/${app.steam_appid}`,
+              emoji: { id: '843039715728424972' }
             }
           ]
         }
