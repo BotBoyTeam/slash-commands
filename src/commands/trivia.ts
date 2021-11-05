@@ -34,7 +34,7 @@ export default class TriviaCommand extends SlashCommand {
     super(creator, {
       name: 'trivia',
       description: 'Do some trivia.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD || [],
+      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.STRING,

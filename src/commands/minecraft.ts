@@ -8,7 +8,7 @@ export default class MinecraftCommand extends SlashCommand {
     super(creator, {
       name: 'minecraft',
       description: 'Do actions related to Minecraft.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD || [],
+      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.SUB_COMMAND,

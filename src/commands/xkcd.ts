@@ -28,7 +28,7 @@ export default class XKCDCommand extends SlashCommand {
     super(creator, {
       name: 'xkcd',
       description: 'View XKCD comics.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD || [],
+      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.INTEGER,

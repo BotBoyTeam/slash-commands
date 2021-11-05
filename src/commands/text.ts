@@ -566,7 +566,7 @@ export default class TextCommand extends SlashCommand {
     super(creator, {
       name: 'text',
       description: 'Tranform text.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD || [],
+      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.SUB_COMMAND,
