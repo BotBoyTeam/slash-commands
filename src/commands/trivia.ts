@@ -94,6 +94,7 @@ export default class TriviaCommand extends SlashCommand {
 
         **Correct!**
       `;
+      opts.embeds[0].color = 0x2ecc71;
     } else {
       opts.embeds[0].description = stripIndents`
         ${decode(question.question)}
@@ -110,6 +111,7 @@ export default class TriviaCommand extends SlashCommand {
 
         **Nope, try again next time!**
       `;
+      opts.embeds[0].color = 0xe74c3c;
     }
     await btnCtx.editParent(opts);
   }
