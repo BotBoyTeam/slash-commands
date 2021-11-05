@@ -97,6 +97,17 @@ interface SteamStoreResponse {
   };
 }
 
+interface SteamDBPlayersResponse {
+  success: boolean;
+  data: {
+    CurrentPlayers: number;
+    MaxPlayers: number;
+    MaxDailyPlayers: number;
+    Followers: number;
+    LastDepotUpdate: string;
+  };
+}
+
 export let applist: AppListResponse['applist']['apps'];
 
 export async function fetchAppList() {
@@ -110,4 +121,11 @@ export async function fetchSteamApp(appid: number) {
   const body = res.body as SteamStoreResponse;
   if (!body[appid.toString()].success) return false;
   return body[appid.toString()].data;
+}
+
+export async function fetchSteamPlayerCounts(appid: number) {
+  const res = await needle('get', `https://steamdb.info/api/GetCurrentPlayers/?appid=${appid}`);
+  const body = res.body as SteamDBPlayersResponse;
+  if (!body.success) return false;
+  return body.data;
 }

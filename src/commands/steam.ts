@@ -17,7 +17,7 @@ import { decode } from 'html-entities';
 import clone from 'lodash.clonedeep';
 import fuzzy from 'fuzzy';
 import { cutoffText, dateFormat, ensureUserCtx, splitMessage } from '../util';
-import { applist, fetchSteamApp } from '../interfaces/steam/store';
+import { applist, fetchSteamApp, fetchSteamPlayerCounts } from '../interfaces/steam/store';
 
 export default class SteamCommand extends SlashCommand {
   constructor(creator: SlashCreator) {
@@ -445,9 +445,11 @@ export default class SteamCommand extends SlashCommand {
     const app = await fetchSteamApp(appid);
     if (!app)
       return {
-        content: '❌ This app does not exist.',
+        content: '❌ This app does not exist or does not have a store page.',
         ephemeral: true
       };
+
+    const playerCounts = await fetchSteamPlayerCounts(app.steam_appid);
 
     return {
       embeds: [
@@ -473,35 +475,44 @@ export default class SteamCommand extends SlashCommand {
             ${app.metacritic ? `**Metacritic:** [${app.metacritic.score}](${app.metacritic.url})` : ''}
           `,
           fields: [
-            ...(!app.release_date.coming_soon
+            !app.release_date.coming_soon
+              ? {
+                  name: 'Price',
+                  value: app.is_free
+                    ? 'Free'
+                    : app.price_overview!.discount_percent
+                    ? `~~${app.price_overview!.initial_formatted}~~ **${app.price_overview!.final_formatted}** \`-${
+                        app.price_overview!.discount_percent
+                      }%\``
+                    : app.price_overview!.final_formatted,
+                  inline: true
+                }
+              : {
+                  name: 'Release Date',
+                  value: app.release_date.date,
+                  inline: true
+                },
+            ...(playerCounts
               ? [
                   {
-                    name: 'Price',
-                    value: app.is_free
-                      ? 'Free'
-                      : app.price_overview!.discount_percent
-                      ? `~~${app.price_overview!.initial_formatted}~~ **${app.price_overview!.final_formatted}** \`-${
-                          app.price_overview!.discount_percent
-                        }%\``
-                      : app.price_overview!.final_formatted,
+                    name: 'SteamDB Counts',
+                    value: stripIndents`
+                      **Online now:** ${playerCounts.CurrentPlayers.toLocaleString()}
+                      **Peak today:** ${playerCounts.MaxDailyPlayers.toLocaleString()}
+                      **All-time peak:** ${playerCounts.MaxPlayers.toLocaleString()}
+                      **Followers:** ${playerCounts.Followers.toLocaleString()}
+                    `,
                     inline: true
                   }
                 ]
-              : [
-                  {
-                    name: 'Release Date',
-                    value: app.release_date.date,
-                    inline: true
-                  }
-                ]),
+              : []),
             {
               name: 'Links',
               value: stripIndents`
                 **steam://run/${app.steam_appid}**
                 ${app.website ? `[Website](${app.website})` : ''}
                 ${app.support_info.url ? `[Support URL](${app.support_info.url})` : ''}
-              `,
-              inline: true
+              `
             }
           ],
           ...(app.header_image
@@ -535,6 +546,5 @@ export default class SteamCommand extends SlashCommand {
         }
       ]
     };
-    // TODO steam game search
   }
 }
