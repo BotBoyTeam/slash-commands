@@ -37,7 +37,7 @@ interface SteamStoreResponse {
         appid: 410;
         description: '';
       }[];
-      price_overview: {
+      price_overview?: {
         currency: string;
         initial: number;
         final: number;

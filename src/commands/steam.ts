@@ -454,7 +454,7 @@ export default class SteamCommand extends SlashCommand {
         {
           title: app.name,
           url: `https://store.steampowered.com/app/${app.steam_appid}`,
-          color: !app.release_date.coming_soon && app.price_overview.discount_percent ? 0xa4d007 : 0x407999,
+          color: !app.release_date.coming_soon && app.price_overview?.discount_percent ? 0xa4d007 : 0x407999,
           description: stripIndents`
             ${decode(app.short_description)}
 
@@ -469,6 +469,7 @@ export default class SteamCommand extends SlashCommand {
             **Publishers:** ${app.publishers.join(', ')}
             **Genres:** ${app.genres.map((g) => g.description).join(', ')}
             **Features:** ${app.categories.map((g) => g.description).join(', ')}
+            ${app.recommendations ? `**Recommendations:** ${app.recommendations.total.toLocaleString()}` : ''}
             ${app.metacritic ? `**Metacritic:** [${app.metacritic.score}](${app.metacritic.url})` : ''}
           `,
           fields: [
@@ -478,9 +479,11 @@ export default class SteamCommand extends SlashCommand {
                     name: 'Price',
                     value: app.is_free
                       ? 'Free'
-                      : app.price_overview.discount_percent
-                      ? `~~${app.price_overview.initial_formatted}~~ **${app.price_overview.final_formatted}** \`-${app.price_overview.discount_percent}%\``
-                      : app.price_overview.final_formatted,
+                      : app.price_overview!.discount_percent
+                      ? `~~${app.price_overview!.initial_formatted}~~ **${app.price_overview!.final_formatted}** \`-${
+                          app.price_overview!.discount_percent
+                        }%\``
+                      : app.price_overview!.final_formatted,
                     inline: true
                   }
                 ]
