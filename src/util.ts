@@ -101,7 +101,7 @@ export function shuffleArray<T = any>(array: T[]): T[] {
   return array.sort(() => Math.random() - 0.5);
 }
 
-export function times(number: number, func: (i: number) => any) {
+export function times<T = any>(number: number, func: (i: number) => T) {
   return ' '
     .repeat(number)
     .split('')
