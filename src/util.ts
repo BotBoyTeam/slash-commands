@@ -74,7 +74,7 @@ export async function ensureUserCtx(btnCtx: ComponentContext, ctx: CommandContex
  * @param date The date to use
  */
 export function dateFormat(date: number, format: string = 'f') {
-  return `<t:${date / 1000}:${format}> (<t:${date / 1000}:R>)`;
+  return `<t:${Math.round(date / 1000)}:${format}> (<t:${Math.round(date / 1000)}:R>)`;
 }
 
 /**
@@ -110,6 +110,10 @@ export function times<T = any>(number: number, func: (i: number) => T) {
 
 export function cutoffText(text: string, limit = 2000) {
   return text.length > limit ? text.slice(0, limit - 1) + '…' : text;
+}
+
+export function capitalize(str: string) {
+  return str.replace(/(^|\s)(\w)/g, (_, p1, p2) => `${p1}${p2.toUpperCase()}`);
 }
 
 export function quickLinkButton(btn: Omit<ComponentButtonLink, 'type' | 'style'>): ComponentActionRow {

@@ -22,7 +22,7 @@ const MAX_SIDED = [
   '> BotBoy doesn\'t have a die with that many sides and rolls a ball.\n> "**{{randomNumber}}**!"\n> *That ball had numbers on it?*'
 ];
 const HIGH_SIDED = ['> BotBoy breaks out the D&D set and rolls dice from it.'];
-const MAX_DICE = ['> BotBoy only has 10 dice...', "> BotBoy can't roll that may dice at once!"];
+const MAX_DICE = ['> BotBoy only has 10 dice...', "> BotBoy can't roll that many dice at once!"];
 const ZERO_DICE = [
   "> {{username}} didn't wanna roll dice.",
   "> {{username}} didn't want to roll dice.",
