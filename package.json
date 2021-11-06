@@ -7,7 +7,7 @@
   "scripts": {
     "start:prod": "npx shx NODE_ENV=production cd dist && node index.js",
     "start": "cd dist && node index.js",
-    "build": "npx tsc",
+    "build": "npx rimraf dist && npx tsc",
     "dev": "devScript",
     "lint": "npx eslint --ext .ts ./src",
     "lint:fix": "npx eslint --ext .ts ./src --fix"
