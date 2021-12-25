@@ -759,7 +759,7 @@ export default class TextCommand extends SlashCommand {
       emojify: (text) =>
         text
           .split('')
-          .map((char) => (EMOJIFY_MAP[char] || /[a-z]/i.test(char) ? `:regional_indicator_${char}:` : char))
+          .map((char) => EMOJIFY_MAP[char] || (/^[a-z]$/i.test(char) ? `:regional_indicator_${char}:` : char))
           .join(' '),
       fancy: (text, ctx) => {
         const style = FANCY_STYLES[ctx.options.fancy.style] || FANCY_STYLES[0];
