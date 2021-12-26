@@ -112,8 +112,8 @@ export function cutoffText(text: string, limit = 2000) {
   return text.length > limit ? text.slice(0, limit - 1) + '…' : text;
 }
 
-export function capitalize(str: string) {
-  return str.replace(/(^|\s)(\w)/g, (_, p1, p2) => `${p1}${p2.toUpperCase()}`);
+export function capitalize(string: string) {
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
 }
 
 export function quickLinkButton(btn: Omit<ComponentButtonLink, 'type' | 'style'>): ComponentActionRow {

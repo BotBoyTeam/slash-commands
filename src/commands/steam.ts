@@ -24,7 +24,6 @@ export default class SteamCommand extends SlashCommand {
     super(creator, {
       name: 'steam',
       description: 'Do actions related to Steam.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.SUB_COMMAND,

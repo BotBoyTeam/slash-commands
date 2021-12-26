@@ -23,7 +23,6 @@ export default class DiceCommand extends SlashCommand {
     super(creator, {
       name: 'wynncraft',
       description: 'Get statistics in Wynncraft.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.SUB_COMMAND,

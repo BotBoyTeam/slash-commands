@@ -8,7 +8,6 @@ export default class CurrencyCommand extends SlashCommand {
     super(creator, {
       name: 'currency',
       description: 'Convert currency.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.STRING,

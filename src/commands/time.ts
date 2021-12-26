@@ -40,7 +40,6 @@ export default class TimeCommand extends SlashCommand {
     super(creator, {
       name: 'time',
       description: 'Get the time of a location.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.STRING,

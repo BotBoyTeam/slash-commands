@@ -28,11 +28,7 @@ creator.on('commandRun', (command, _, ctx) =>
 creator.on('commandRegister', (command) => logger.info(`Registered command ${command.commandName}`));
 creator.on('commandError', (command, error) => logger.error(`Command ${command.commandName}:`, error));
 
-creator
-  .withServer(new FastifyServer())
-  .registerCommandsIn(path.join(__dirname, 'commands'))
-  .syncCommands()
-  .startServer();
+creator.withServer(new FastifyServer()).registerCommandsIn(path.join(__dirname, 'commands')).startServer();
 
 startAll();
 fetchAppList();

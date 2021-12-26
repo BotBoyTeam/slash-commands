@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Slash commands for BotBoy",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "scripts": {
+    "sync": "slash-up sync -e development",
+    "sync:prod": "slash-up sync -e production",
     "start:prod": "npx shx NODE_ENV=production cd dist && node index.js",
     "start": "cd dist && node index.js",
     "build": "npx rimraf dist && npx tsc",
@@ -27,7 +29,7 @@
     "html-entities": "^2.3.2",
     "lodash.clonedeep": "^4.5.0",
     "needle": "^2.6.0",
-    "slash-create": "^4.3.0",
+    "slash-create": "^5.0.1",
     "turndown": "^7.0.0"
   },
   "devDependencies": {
@@ -44,6 +46,7 @@
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^3.3.0",
     "prettier": "^2.2.1",
+    "slash-up": "^1.0.6",
     "ts-devscript": "^3.0.5",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3"

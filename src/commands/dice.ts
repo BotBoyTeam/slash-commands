@@ -64,7 +64,6 @@ export default class DiceCommand extends SlashCommand {
     super(creator, {
       name: 'dice',
       description: 'Roll some dice.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.INTEGER,

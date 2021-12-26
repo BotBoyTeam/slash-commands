@@ -25,7 +25,6 @@ export default class DictionaryCommand extends SlashCommand {
     super(creator, {
       name: 'dictionary',
       description: 'Dictionary-related commands.',
-      guildIDs: process.env.COMMANDS_DEV_GUILD ? [process.env.COMMANDS_DEV_GUILD] : undefined,
       options: [
         {
           type: CommandOptionType.SUB_COMMAND,
