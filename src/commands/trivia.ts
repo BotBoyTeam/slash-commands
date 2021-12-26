@@ -10,7 +10,7 @@ import {
   EditMessageOptions
 } from 'slash-create';
 import needle from 'needle';
-import { shuffleArray } from '../util';
+import { capitalize, shuffleArray } from '../util';
 import { decode } from 'html-entities';
 import { stripIndents } from 'common-tags';
 
@@ -44,6 +44,37 @@ export default class TriviaCommand extends SlashCommand {
             { name: 'Medium', value: 'medium' },
             { name: 'Hard', value: 'hard' }
           ]
+        },
+        {
+          type: CommandOptionType.INTEGER,
+          name: 'category',
+          description: 'Which category do you want to play in?',
+          choices: [
+            { name: 'General Knowledge', value: 9 },
+            { name: 'Entertainment: Books', value: 10 },
+            { name: 'Entertainment: Film', value: 11 },
+            { name: 'Entertainment: Music', value: 12 },
+            { name: 'Entertainment: Musicals & Theatres', value: 13 },
+            { name: 'Entertainment: Television', value: 14 },
+            { name: 'Entertainment: Video Games', value: 15 },
+            { name: 'Entertainment: Board Games', value: 16 },
+            { name: 'Science & Nature', value: 17 },
+            { name: 'Science: Computers', value: 18 },
+            { name: 'Science: Mathematics', value: 19 },
+            { name: 'Mythology', value: 20 },
+            { name: 'Sports', value: 21 },
+            { name: 'Geography', value: 22 },
+            { name: 'History', value: 23 },
+            { name: 'Politics', value: 24 },
+            { name: 'Art', value: 25 },
+            { name: 'Celebrities', value: 26 },
+            { name: 'Animals', value: 27 },
+            { name: 'Vehicles', value: 28 },
+            { name: 'Entertainment: Comics', value: 29 },
+            { name: 'Science: Gadgets', value: 30 },
+            { name: 'Entertainment: Japanese Anime & Manga', value: 31 },
+            { name: 'Entertainment: Cartoon & Animations', value: 32 }
+          ]
         }
       ],
       throttling: {
@@ -72,7 +103,7 @@ export default class TriviaCommand extends SlashCommand {
       embeds: [
         {
           author: {
-            name: `${question.category}\nDifficulty: ${question.difficulty}`
+            name: `${question.category}\nDifficulty: ${capitalize(question.difficulty)}`
           }
         }
       ],
@@ -119,7 +150,9 @@ export default class TriviaCommand extends SlashCommand {
     await ctx.defer();
     const response = await needle(
       'get',
-      `https://opentdb.com/api.php?amount=1${ctx.options.difficulty ? `&difficulty=${ctx.options.difficulty}` : ''}`
+      `https://opentdb.com/api.php?amount=1${ctx.options.difficulty ? `&difficulty=${ctx.options.difficulty}` : ''}${
+        ctx.options.category ? `&category=${ctx.options.category}` : ''
+      }`
     );
     const question = (response.body as TriviaResponse).results[0];
     const choices = shuffleArray([question.correct_answer, ...question.incorrect_answers]);
@@ -128,7 +161,7 @@ export default class TriviaCommand extends SlashCommand {
       embeds: [
         {
           author: {
-            name: `${question.category}\nDifficulty: ${question.difficulty}`
+            name: `${question.category}\nDifficulty: ${capitalize(question.difficulty)}`
           },
           description: stripIndents`
             ${decode(question.question)}
