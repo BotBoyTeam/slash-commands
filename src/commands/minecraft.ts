@@ -119,6 +119,12 @@ export default class MinecraftCommand extends SlashCommand {
         ephemeral: true
       };
 
+    if (!user.id || !user.name)
+      return {
+        content: '❌ No profile was found!',
+        ephemeral: true
+      };
+
     await ctx.send({
       embeds: [
         {
