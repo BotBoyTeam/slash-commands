@@ -1,8 +1,10 @@
 import needle from 'needle';
 
 interface AppListResponse {
-  applist: {
-    apps: { appid: number; name: string }[];
+  response: {
+    apps: { appid: number; name: string; last_modified: number; price_change_number: number }[];
+    have_more_results: boolean;
+    last_appid: number;
   };
 }
 
@@ -108,11 +110,54 @@ interface SteamDBPlayersResponse {
   };
 }
 
-export let applist: AppListResponse['applist']['apps'];
+export let applist: AppListResponse['response']['apps'] = [];
 
 export async function fetchAppList() {
-  const res = await needle('get', 'https://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json');
-  applist = (res.body as AppListResponse).applist.apps;
+  const key = process.env.STEAM_WEB_KEY;
+  if (!key) {
+    console.warn('STEAM_WEB_KEY is missing. Steam app list will not be refreshed.');
+    return applist;
+  }
+
+  const apps: AppListResponse['response']['apps'] = [];
+  let lastAppId: number | undefined;
+  let hasMore = true;
+
+  try {
+    while (hasMore) {
+      const query = new URLSearchParams({
+        key,
+        max_results: '50000'
+      });
+
+      if (lastAppId !== undefined) {
+        query.set('last_appid', lastAppId.toString());
+      }
+
+      const res = await needle('get', `https://api.steampowered.com/IStoreService/GetAppList/v1/?${query.toString()}`);
+      const data = (res.body as AppListResponse).response;
+
+      if (!data) {
+        break;
+      }
+
+      if (Array.isArray(data.apps)) {
+        apps.push(...data.apps);
+      }
+
+      hasMore = Boolean(data.have_more_results);
+      lastAppId = data.last_appid;
+
+      if (hasMore && lastAppId === undefined) {
+        break;
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to fetch Steam app list.', error);
+    return applist;
+  }
+
+  applist = apps;
   return applist;
 }
 
